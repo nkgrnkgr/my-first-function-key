@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { getFunctionKeyFromEvent, type FunctionKey } from "@/lib/functionKeys";
+import { type FunctionKey, getFunctionKeyFromEvent } from "@/lib/functionKeys";
 
 export type FunctionKeyState = {
   current: FunctionKey | null;

@@ -1,8 +1,8 @@
 "use client";
 
+import { useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { useFunctionKeyListenerWithin } from "@/hooks/useFunctionKeys";
-import { useRef } from "react";
 import { GlobalFunctionKeyView } from "./function-key-view";
 
 type Props = React.InputHTMLAttributes<HTMLInputElement> & {
