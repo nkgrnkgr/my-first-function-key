@@ -14,10 +14,13 @@ export function useFunctionKeyListener<T extends HTMLElement>(
   const currentRef = useRef<FunctionKey | null>(null);
 
   useEffect(() => {
-    const eventTarget: EventTarget = target?.current ?? window;
+    const element = target?.current;
+    const eventTarget: EventTarget = element ?? window;
+    const isScoped = Boolean(element);
 
     const handleKeyDown = (event: Event) => {
       const keyboardEvent = event as KeyboardEvent;
+      if (isScoped) keyboardEvent.stopPropagation();
       const fnKey = getFunctionKeyFromEvent(keyboardEvent);
       if (!fnKey) return;
       if (currentRef.current !== fnKey) {
@@ -29,6 +32,7 @@ export function useFunctionKeyListener<T extends HTMLElement>(
 
     const handleKeyUp = (event: Event) => {
       const keyboardEvent = event as KeyboardEvent;
+      if (isScoped) keyboardEvent.stopPropagation();
       const fnKey = getFunctionKeyFromEvent(keyboardEvent);
       if (!fnKey) return;
       setLastKey(fnKey);
