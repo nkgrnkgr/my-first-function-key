@@ -1,4 +1,3 @@
-"use client";
 import { useEffect, useRef, useState } from "react";
 import { type FunctionKey, getFunctionKeyFromEvent } from "@/lib/functionKeys";
 
@@ -7,71 +6,30 @@ export type FunctionKeyState = {
   last: FunctionKey | null;
 };
 
-export function useFunctionKeyListener(): FunctionKeyState {
-  const [currentKey, setCurrentKey] = useState<FunctionKey | null>(null);
-  const [lastKey, setLastKey] = useState<FunctionKey | null>(null);
-  const currentRef = useRef<FunctionKey | null>(null);
-
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      const fnKey = getFunctionKeyFromEvent(event);
-      if (fnKey) {
-        if (currentRef.current !== fnKey) {
-          if (currentRef.current) {
-            setLastKey(currentRef.current);
-          }
-          currentRef.current = fnKey;
-          setCurrentKey(fnKey);
-        }
-      }
-    };
-
-    const handleKeyUp = (event: KeyboardEvent) => {
-      const fnKey = getFunctionKeyFromEvent(event);
-      if (!fnKey) return;
-      // Update last to the key that was just released
-      setLastKey(fnKey);
-      if (currentRef.current === fnKey) {
-        currentRef.current = null;
-        setCurrentKey(null);
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown, { passive: true });
-    window.addEventListener("keyup", handleKeyUp, { passive: true });
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      window.removeEventListener("keyup", handleKeyUp);
-    };
-  }, []);
-
-  return { current: currentKey, last: lastKey };
-}
-
-export function useFunctionKeyListenerWithin<T extends HTMLElement>(
-  target: React.RefObject<T | null>,
+export function useFunctionKeyListener<T extends HTMLElement>(
+  target?: React.RefObject<T | null>,
 ): FunctionKeyState {
   const [currentKey, setCurrentKey] = useState<FunctionKey | null>(null);
   const [lastKey, setLastKey] = useState<FunctionKey | null>(null);
   const currentRef = useRef<FunctionKey | null>(null);
 
   useEffect(() => {
-    const element = target.current;
-    if (!element) return;
+    const eventTarget: EventTarget = target?.current ?? window;
 
-    const handleKeyDown = (event: KeyboardEvent) => {
-      const fnKey = getFunctionKeyFromEvent(event);
-      if (fnKey) {
-        if (currentRef.current !== fnKey) {
-          if (currentRef.current) setLastKey(currentRef.current);
-          currentRef.current = fnKey;
-          setCurrentKey(fnKey);
-        }
+    const handleKeyDown = (event: Event) => {
+      const keyboardEvent = event as KeyboardEvent;
+      const fnKey = getFunctionKeyFromEvent(keyboardEvent);
+      if (!fnKey) return;
+      if (currentRef.current !== fnKey) {
+        if (currentRef.current) setLastKey(currentRef.current);
+        currentRef.current = fnKey;
+        setCurrentKey(fnKey);
       }
     };
 
-    const handleKeyUp = (event: KeyboardEvent) => {
-      const fnKey = getFunctionKeyFromEvent(event);
+    const handleKeyUp = (event: Event) => {
+      const keyboardEvent = event as KeyboardEvent;
+      const fnKey = getFunctionKeyFromEvent(keyboardEvent);
       if (!fnKey) return;
       setLastKey(fnKey);
       if (currentRef.current === fnKey) {
@@ -80,21 +38,17 @@ export function useFunctionKeyListenerWithin<T extends HTMLElement>(
       }
     };
 
-    element.addEventListener(
-      "keydown",
-      handleKeyDown as EventListener,
-      { passive: true } as AddEventListenerOptions,
-    );
-    element.addEventListener(
-      "keyup",
-      handleKeyUp as EventListener,
-      { passive: true } as AddEventListenerOptions,
-    );
+    eventTarget.addEventListener("keydown", handleKeyDown, {
+      passive: true,
+    } as AddEventListenerOptions);
+    eventTarget.addEventListener("keyup", handleKeyUp, {
+      passive: true,
+    } as AddEventListenerOptions);
     return () => {
-      element.removeEventListener("keydown", handleKeyDown as EventListener);
-      element.removeEventListener("keyup", handleKeyUp as EventListener);
+      eventTarget.removeEventListener("keydown", handleKeyDown);
+      eventTarget.removeEventListener("keyup", handleKeyUp);
     };
-  }, [target]);
+  }, [target?.current]);
 
   return { current: currentKey, last: lastKey };
 }
