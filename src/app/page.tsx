@@ -1,5 +1,10 @@
-import { FunctionKeyViewer } from "@/components/app";
+import { FunctionKeyViewer, InputTypeText } from "@/components/app";
 
 export default function Home() {
-  return <FunctionKeyViewer />;
+  return (
+    <>
+      <InputTypeText />
+      <FunctionKeyViewer />
+    </>
+  );
 }
