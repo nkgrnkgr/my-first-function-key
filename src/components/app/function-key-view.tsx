@@ -14,7 +14,7 @@ export function GlobalFunctionKeyView({
   positionClassName,
 }: Props) {
   const baseClass =
-    "rounded-md bg-black/75 text-white px-2 py-1 font-mono text-xs shadow-xs w-max";
+    "rounded-md bg-black/75 text-white px-2 py-1 font-mono text-base shadow-xs w-max";
   return (
     <div className={cn(baseClass, positionClassName)}>
       <div>
